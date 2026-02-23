@@ -18,8 +18,8 @@
 
 static const char* TAG = "AxonOnOnOn";
 
-#define ADV_DURATION_MS 2000
-#define PAUSE_DURATION_MS 2000
+#define ADV_DURATION_MS 500
+#define PAUSE_DURATION_MS 500
 
 #define ENABLE_FUZZING 0
 
