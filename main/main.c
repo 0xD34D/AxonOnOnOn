@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "esp_bt.h"
 #include "esp_check.h"
 #include "esp_log.h"
 #include "esp_mac.h"
@@ -66,6 +67,9 @@ esp_err_t ble_init(void) {
   ESP_RETURN_ON_ERROR(nimble_port_init(), TAG, "Failed to initialize NimBLE");
   nimble_port_freertos_init(host_task);
 
+  ESP_RETURN_ON_ERROR(
+      esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_ADV, ESP_PWR_LVL_P20), TAG,
+      "Failed to set BLE TX power");
   return ESP_OK;
 }
 
