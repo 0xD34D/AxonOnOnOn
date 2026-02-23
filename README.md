@@ -1,15 +1,23 @@
 # AxonOnOnOn
 
-An ESP32 project for research and testing purposes that sends the `Start Recording` command to Axon body and dash cameras.
+Allows a BLE capable ESP32 device to wirelessly trigger Axon body and dash cameras to start recording.
 
-## What This Is
+## Features
 
-A tool for research and educational purposes that turns a BLE capable ESP32 device into a `Start Recording` broadcaster that will continuously advertise to supported Axon devices to start recording.
+- Continuously broadcasts the signal for Axon body and dask cameras to start recording.
+- Each broadcast uses a randomized MAC address based on Axon's OUI prefix of `00:25:df`
+
+## Notes
+
+- Based on [AxonCadabra](https://github.com/WithLoveFromMinneapolis/AxonCadabra) for Android and [Axon_ON](https://github.com/KaraZajac/Axon_ON) for the Flipper Zero.
+- Don't bet your life on this working - cameras can be configured to ignore non-allowlisted Axon serial numbers.
+- Cameras can only be forced to START recording, the camera operator always has the ability to hit the action button on the camera and stop the recording.
+- Once a given BLE device has triggered a given camera, there is some cool down before that device can trigger it again. The fuzz mode is an attempt to bypass this trigger cool down restriction.
 
 ## Building
 
 You'll need:
-- ESP32-C3 or compatible ESP32 board
+- ESP32-C3,S3 or compatible ESP32 board
 - ESP-IDF v5.x or later
 - Basic familiarity with ESP-IDF tooling
 
@@ -21,15 +29,9 @@ idf.py flash
 idf.py monitor
 ```
 
-## Notes
-
-- Legal and regulatory compliance is your responsibility.  Verify legal status in your jurisdiction before use.
-
 ## Legal Disclaimer
 
-This code is for **educational and research purposes only**. Users are responsible for ensuring their use complies with applicable laws and regulations in their jurisdiction.
-
-Based on [AxonCadabra](https://github.com/WithLoveFromMinneapolis/AxonCadabra) for Android and [Axon_ON](https://github.com/KaraZajac/Axon_ON) for the Flipper Zero.
+Users are responsible for ensuring their use complies with applicable laws and regulations in their jurisdiction.
 
 ## License
 
