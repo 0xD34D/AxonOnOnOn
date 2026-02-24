@@ -66,6 +66,7 @@ static void host_task(void* param) {
 esp_err_t ble_init(void) {
   ESP_RETURN_ON_ERROR(nimble_port_init(), TAG, "Failed to initialize NimBLE");
   nimble_port_freertos_init(host_task);
+  esp_log_level_set("NimBLE", ESP_LOG_ERROR);
 
   ESP_RETURN_ON_ERROR(
       esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_ADV, ESP_PWR_LVL_P20), TAG,
