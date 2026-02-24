@@ -92,37 +92,43 @@ esp_err_t ble_set_mac_prefix(const uint8_t prefix[]) {
 esp_err_t ble_start_axonononon() {
   ESP_LOGI(TAG, "Starting AxonOnOnOn advertising");
   struct ble_gap_adv_params adv_params;
-  struct ble_hs_adv_fields fields;
 
   ble_set_mac_prefix(&kAxonBlePrefix[0]);
 
-  memset(&fields, 0, sizeof(fields));
+  uint8_t raw_adv_data[29];
+  size_t offset = 0;
+  size_t data_len =
+      sizeof(kAxonBaseServiceData) + 3;  // type(1) + uuid(2) + service data
+  if (data_len > sizeof(raw_adv_data)) {
+    ESP_LOGE(TAG, "Service data too large for advertising packet");
+    return ESP_ERR_INVALID_SIZE;
+  }
 
-  fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
-  fields.svc_data_uuid16 = (uint8_t*)&kAxonServiceUuid;
-  fields.svc_data_uuid16_len = sizeof(kAxonBaseServiceData);
-  uint8_t service_data[sizeof(kAxonBaseServiceData)];
-  memcpy(service_data, kAxonBaseServiceData, sizeof(kAxonBaseServiceData));
+  raw_adv_data[offset++] = data_len;
+  raw_adv_data[offset++] = 0x16;
+  raw_adv_data[offset++] = (kAxonServiceUuid & 0xFF);
+  raw_adv_data[offset++] = ((kAxonServiceUuid >> 8) & 0xFF);
+  memcpy(&raw_adv_data[offset], kAxonBaseServiceData,
+         sizeof(kAxonBaseServiceData));
 #if ENABLE_FUZZING
   // Fuzz strategy: Modify bytes at different positions based on fuzz value
   // Position 10-11 seem to be command bytes (0x01 0x02 in original)
   // Position 20-21 also has values (0x00 0x02 in original)
 
   // Increment byte at position 10 (command byte 1)
-  service_data[10] = ((fuzz_value >> 8) & 0xFF);
-  // Increment byte at position 11 (command byte 2)
-  service_data[11] = (fuzz_value & 0xFF);
+  raw_adv_data[10 + offset] = ((fuzz_value >> 8) & 0xFF);
+  raw_adv_data[11 + offset] = (fuzz_value & 0xFF);
 
   // Also vary the last few bytes
-  service_data[20] = ((fuzz_value >> 4) & 0xFF);
-  service_data[21] = ((fuzz_value << 4) & 0xFF);
+  raw_adv_data[20 + offset] = ((fuzz_value >> 4) & 0xFF);
+  raw_adv_data[21 + offset] = ((fuzz_value << 4) & 0xFF);
 
   fuzz_value = (fuzz_value + 1) & 0xFFFF;
 #endif
-  fields.svc_data_uuid16 = service_data;
+  offset += sizeof(kAxonBaseServiceData);
 
-  ESP_RETURN_ON_ERROR(ble_gap_adv_set_fields(&fields), TAG,
-                      "Failed to set adv fields");
+  ESP_RETURN_ON_ERROR(ble_gap_adv_set_data(raw_adv_data, offset), TAG,
+                      "Failed to set adv data");
 
   memset(&adv_params, 0, sizeof(adv_params));
 
