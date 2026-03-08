@@ -16,9 +16,9 @@
 #include "nvs_flash.h"
 #include "services/gap/ble_svc_gap.h"
 
-static const char* TAG = "AxonOnOnOn";
+static const char* TAG = "AxonBeacon";
 
-#define ADV_DURATION_MS 500
+#define ADV_DURATION_MS 1000
 #define PAUSE_DURATION_MS 500
 
 #define ENABLE_FUZZING 0
@@ -30,8 +30,8 @@ static const uint8_t kAxonBaseServiceData[] = {
     0x00, 0x00, 0x00, 0x00, 0xCE, 0x1B, 0x33, 0x00, 0x00, 0x02, 0x00, 0x00};
 
 esp_err_t ble_init(void);
-esp_err_t ble_start_axonononon();
-esp_err_t ble_stop_axonononon(void);
+esp_err_t ble_start_axonbeacon();
+esp_err_t ble_stop_axonbeacon(void);
 
 static uint16_t fuzz_value = 0xd34d;
 
@@ -48,9 +48,9 @@ void app_main(void) {
   ESP_ERROR_CHECK(ble_init());
 
   while (1) {
-    ble_start_axonononon(kAxonBlePrefix);
+    ble_start_axonbeacon(kAxonBlePrefix);
     vTaskDelay(pdMS_TO_TICKS(ADV_DURATION_MS));
-    ble_stop_axonononon();
+    ble_stop_axonbeacon();
     vTaskDelay(pdMS_TO_TICKS(PAUSE_DURATION_MS));
   }
 }
@@ -90,8 +90,8 @@ esp_err_t ble_set_mac_prefix(const uint8_t prefix[]) {
   return ESP_OK;
 }
 
-esp_err_t ble_start_axonononon() {
-  ESP_LOGI(TAG, "Starting AxonOnOnOn advertising");
+esp_err_t ble_start_axonbeacon() {
+  ESP_LOGI(TAG, "Starting AxonBeacon advertising");
   struct ble_gap_adv_params adv_params;
 
   ble_set_mac_prefix(&kAxonBlePrefix[0]);
@@ -144,8 +144,8 @@ esp_err_t ble_start_axonononon() {
   return ESP_OK;
 }
 
-esp_err_t ble_stop_axonononon(void) {
-  ESP_LOGI(TAG, "Stopping AxonOnOnOn advertising");
+esp_err_t ble_stop_axonbeacon(void) {
+  ESP_LOGI(TAG, "Stopping AxonBeacon advertising");
   ESP_RETURN_ON_ERROR(ble_gap_adv_stop(), TAG, "Failed to stop advertising");
 
   return ESP_OK;

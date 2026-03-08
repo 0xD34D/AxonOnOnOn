@@ -1,4 +1,4 @@
-# AxonOnOnOn
+# AxonBeacon
 
 Allows a BLE capable ESP32 device to wirelessly trigger Axon body and dash cameras to start recording.
 
